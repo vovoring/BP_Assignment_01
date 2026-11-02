@@ -1,0 +1,26 @@
+{
+  "baseURL": "https://vovoring.github.io/BP_Assignment_01/",
+  "enableGitInfo": false,
+  "themesDir": "themes",
+  "timeout": "120s",
+  "security": {
+    "exec": {
+      "allow": [
+        "^(dart-)?sass$",
+        "^go$",
+        "^git$",
+        "^node$",
+        "^postcss$",
+        "^tailwindcss$",
+        "^asciidoctor$"
+      ]
+    },
+    "allowContent": [
+      "^text/"
+    ]
+  },
+  "theme": [
+    "template"
+  ],
+  "title": "hermit-v2"
+}

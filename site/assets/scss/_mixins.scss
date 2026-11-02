@@ -1,0 +1,91 @@
+// These are default SCSS mixins
+// This mixin is used to provide darkish effect in
+// #home-footer, .post-year (in list), .post-day (in list), .post-description (in list), .post-date, .post-description, #TableOfContents
+@mixin dimmed {
+  opacity: $dimmed-opacity;
+}
+
+@mixin aTag {
+  a {
+    word-wrap: break-word;
+    border: none;
+    position: relative;
+    box-shadow: inset 0 -4px 0 $aTag-mixin-a-box-shadow;
+    transition: box-shadow 0.3s ease;
+
+    &:hover {
+      box-shadow: inset 0 calc(-1.5em - 5px) 0 $aTag-mixin-a-hover-box-shadow;
+    }
+  }
+}
+
+// Repeats identically for ::-moz-selection and ::selection
+@mixin selection-highlight($color) {
+  ::-moz-selection {background: $color;}
+  ::selection {background: $color;}
+}
+
+// Custom webkit scrollbar implementation
+@mixin custom-scrollbar($width, $thumb-bg, $thumb-hover, $height: null, $bg: null, $track: null) {
+  &::-webkit-scrollbar {
+    width: $width;
+    @if $height { height: $height; }
+    @if $bg { background: $bg; }
+  }
+  @if $track {
+    &::-webkit-scrollbar-track {
+      background: $track;
+    }
+  }
+  // Style the scrollbar thumb (draggable portion) with hover effects
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-bg;
+    &:hover {
+      background: $thumb-hover;
+    }
+  }
+}
+
+
+// --- HOME SUBTITLE PRINTER CURSOR STYLES ---
+
+// Cursor state modifier for Typewriter functionality
+@mixin cursor-state($left-pos, $anim-type) {
+  content: "";
+  display: block;
+  width: 0.6em; // Adjust width if the block feels too fat/thin
+  height: 1.2em; // Matches standard line-height
+  background-color: $typewriter;
+
+  // Positioning: Anchored relative to the character span
+  position: absolute;
+  bottom: 0; // Aligns with the text baseline
+  left: $left-pos;
+  animation: $anim-type;
+}
+
+// Expanded Figure Layout for Wide Screens
+@mixin figure-expanded-layout($offset, $big-width, $side-max-width: null, $text-align: false) {
+  figure.left {
+    margin-left: -$offset;
+    @if $side-max-width { max-width: $side-max-width; }
+    @if $text-align { p { text-align: left; } }
+  }
+  figure.right {
+    margin-right: -$offset;
+    @if $side-max-width { max-width: $side-max-width; }
+    @if $text-align { p { text-align: right; } }
+  }
+  figure.big {
+    width: $big-width;
+    margin-left: -$offset;
+  }
+}
+
+// Unstyled Flex List reset
+@mixin unstyled-flex-list {
+  flex-grow: 1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
