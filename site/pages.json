@@ -22,5 +22,48 @@
   "theme": [
     "template"
   ],
-  "title": "hermit-v2"
+  "title": "Hermit - V2",
+  "params": {
+    "themeColor": "#494f5c",
+    "accentColor": "#018472",
+    "homeSubtitle": "Minimalist, production-ready Hugo theme for modern bloggers & developers",
+    "homeSubtitlePrinter": true,
+    "footerCopyright": "vovoring",
+    "code_copy_button": true,
+    "scrollToTop": true,
+    "shareSocial": true,
+    "usesAnimation": true,
+    "listLayout": [
+      "description",
+      "tags",
+      "categories"
+    ],
+    "author": {
+      "name": "vovoring"
+    },
+    "socialLinks": [
+      {
+        "name": "github",
+        "url": "https://github.com/vovoring"
+      },
+      {
+        "name": "email",
+        "url": "mailto:your-email@example.com"
+      }
+    ]
+  },
+  "menu": {
+    "main": [
+      {
+        "name": "Posts",
+        "url": "posts/",
+        "weight": 10
+      },
+      {
+        "name": "About",
+        "url": "about/",
+        "weight": 20
+      }
+    ]
+  }
 }
