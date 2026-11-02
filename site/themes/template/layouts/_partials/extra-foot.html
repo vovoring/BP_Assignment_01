@@ -1,0 +1,73 @@
+<style>
+  /* 키보드로 선택된 메뉴/게시글 강조 스타일 */
+  #home-nav a.kb-selected,
+  .post-item > a.kb-selected,
+  .pinned-post-item > a.kb-selected {
+    color: #018472 !important;
+    background-color: rgba(1, 132, 114, 0.12);
+    border-radius: 6px;
+    outline: 1px solid rgba(1, 132, 114, 0.5);
+    padding-left: 10px;
+    padding-right: 10px;
+    transition: all 0.15s ease;
+  }
+
+  /* 메인 화면 메뉴에 화살표(▶) 표시 추가 */
+  #home-nav a.kb-selected::before {
+    content: "▶ ";
+    font-size: 0.8em;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // 메인 화면이면 #home-nav 메뉴들을, 글 목록 화면이면 게시글 링크들을 대상으로 지정
+    const items = Array.from(
+      document.querySelectorAll("#home-nav a, .pinned-post-item > a, .post-item > a")
+    );
+    if (items.length === 0) return;
+
+    let currentIndex = 0;
+
+    const updateSelection = (index) => {
+      items.forEach((el, i) => {
+        if (i === index) {
+          el.classList.add("kb-selected");
+          el.focus({ preventScroll: true });
+          el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        } else {
+          el.classList.remove("kb-selected");
+        }
+      });
+    };
+
+    // 페이지 진입 시 첫 번째 항목을 기본 선택 상태로 표시
+    updateSelection(currentIndex);
+
+    // 마우스를 올리면 해당 항목으로 선택 위치 동기화
+    items.forEach((el, idx) => {
+      el.addEventListener("mouseenter", () => {
+        currentIndex = idx;
+        updateSelection(currentIndex);
+      });
+    });
+
+    // 위/아래 방향키 및 엔터 키 조작 이벤트
+    document.addEventListener("keydown", (e) => {
+      if (["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) return;
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        currentIndex = (currentIndex + 1) % items.length;
+        updateSelection(currentIndex);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        currentIndex = (currentIndex - 1 + items.length) % items.length;
+        updateSelection(currentIndex);
+      } else if (e.key === "Enter" && currentIndex >= 0 && items[currentIndex]) {
+        e.preventDefault();
+        window.location.href = items[currentIndex].href;
+      }
+    });
+  });
+</script>
