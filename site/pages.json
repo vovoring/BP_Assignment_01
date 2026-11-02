@@ -1,5 +1,8 @@
 {
   "baseURL": "https://vovoring.github.io/BP_Assignment_01/",
+  "defaultContentLanguage": "ko",
+  "languageCode": "ko-kr",
+  "hasCJKLanguage": true,
   "enableGitInfo": false,
   "themesDir": "themes",
   "timeout": "120s",
