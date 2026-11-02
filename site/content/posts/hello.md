@@ -1,6 +1,6 @@
 ---
-title: Hello
-date: 2026-01-01
+title: 입학
+date: 2023-01-01
 draft: false
 ---
-This is my first post.
+저의 대학교 입학 년도는 2023년이었습니다.
