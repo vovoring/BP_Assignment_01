@@ -63,13 +63,18 @@ draft: false
   const HEIGHT = canvas.height;
   const GROUND_Y = 182;
 
+  // 속도 설정 (원하는 대로 숫자 조절 가능)
+  const BASE_SPEED = 4.2;
+  const MAX_SPEED = 9.0;
+
   let gameState = "WAITING";
   let score = 0;
   let highScore = Number(localStorage.getItem("hermit_dino_hi") || 0);
-  let speed = 2;
-  let frameCount = 0;
+  let speed = BASE_SPEED;
+  let animTick = 0;
   let flashTimer = 0;
   let flashScoreValue = 0;
+  let lastTime = 0;
 
   const dino = {
     x: 52,
@@ -77,8 +82,8 @@ draft: false
     w: 40,
     h: 44,
     vy: 0,
-    gravity: 0.68,
-    jumpPower: -12.6,
+    gravity: 0.48,
+    jumpPower: -10.8,
     grounded: true,
     ducking: false,
     reset() {
@@ -104,14 +109,14 @@ draft: false
         this.h = isDuck ? 28 : 44;
         this.w = isDuck ? 52 : 40;
         this.y = GROUND_Y - this.h;
-      } else if (isDuck) {
-        this.vy += 3.2;
+      } else if (isDuck && this.vy < 4) {
+        this.vy = 5.5;
       }
     },
-    update() {
+    update(dt) {
       if (!this.grounded) {
-        this.vy += this.gravity;
-        this.y += this.vy;
+        this.vy += this.gravity * dt;
+        this.y += this.vy * dt;
         if (this.y >= GROUND_Y - this.h) {
           this.y = GROUND_Y - this.h;
           this.vy = 0;
@@ -130,7 +135,7 @@ draft: false
         ctx.fillStyle = "#3b3e48";
         ctx.fillRect(x + 44, y + 5, 3, 3);
         ctx.fillStyle = "#eeeeee";
-        const legOffset = Math.floor(frameCount / 5) % 2 === 0 ? 0 : 4;
+        const legOffset = Math.floor(animTick / 6) % 2 === 0 ? 0 : 4;
         ctx.fillRect(x + 8 + legOffset, y + 20, 5, 8);
         ctx.fillRect(x + 22 - legOffset, y + 20, 5, 8);
         return;
@@ -155,7 +160,7 @@ draft: false
         ctx.fillRect(x + 11, y + 32, 5, 12);
         ctx.fillRect(x + 21, y + 32, 5, 12);
       } else {
-        const step = Math.floor(frameCount / 6) % 2;
+        const step = Math.floor(animTick / 7) % 2;
         if (step === 0) {
           ctx.fillRect(x + 11, y + 32, 5, 12);
           ctx.fillRect(x + 21, y + 32, 5, 7);
@@ -169,9 +174,9 @@ draft: false
 
   let obstacles = [];
   let clouds = [
-    { x: 140, y: 45, speed: 0.7 },
-    { x: 390, y: 68, speed: 0.5 },
-    { x: 610, y: 36, speed: 0.6 }
+    { x: 140, y: 45, speed: 0.5 },
+    { x: 390, y: 68, speed: 0.35 },
+    { x: 610, y: 36, speed: 0.45 }
   ];
   let groundBumps = Array.from({ length: 28 }, (_, i) => ({
     x: i * 30,
@@ -180,17 +185,17 @@ draft: false
   }));
 
   function spawnObstacle() {
-    const canSpawnBird = score > 180 && Math.random() < 0.28;
+    const canSpawnBird = score > 200 && Math.random() < 0.25;
     if (canSpawnBird) {
       const birdHeights = [GROUND_Y - 36, GROUND_Y - 62, GROUND_Y - 82];
       const by = birdHeights[Math.floor(Math.random() * birdHeights.length)];
       obstacles.push({ type: "bird", x: WIDTH + 20, y: by, w: 36, h: 24 });
     } else {
       const variants = [
-        { w: 16, h: 34 },
-        { w: 22, h: 44 },
-        { w: 34, h: 36 },
-        { w: 46, h: 42 }
+        { w: 16, h: 32 },
+        { w: 20, h: 40 },
+        { w: 32, h: 34 },
+        { w: 42, h: 38 }
       ];
       const v = variants[Math.floor(Math.random() * variants.length)];
       obstacles.push({ type: "cactus", x: WIDTH + 20, y: GROUND_Y - v.h, w: v.w, h: v.h });
@@ -202,7 +207,7 @@ draft: false
     const y = Math.round(obs.y);
     if (obs.type === "cactus") {
       ctx.fillStyle = "#018472";
-      const count = obs.w > 38 ? 3 : obs.w > 26 ? 2 : 1;
+      const count = obs.w > 36 ? 3 : obs.w > 24 ? 2 : 1;
       const singleW = Math.floor(obs.w / count);
       for (let i = 0; i < count; i++) {
         const cx = x + i * singleW;
@@ -214,7 +219,7 @@ draft: false
       }
     } else {
       ctx.fillStyle = "#eeeeee";
-      const wingUp = Math.floor(frameCount / 10) % 2 === 0;
+      const wingUp = Math.floor(animTick / 10) % 2 === 0;
       ctx.fillRect(x, y + 10, 12, 6);
       ctx.fillRect(x + 10, y + 8, 22, 8);
       if (wingUp) {
@@ -271,8 +276,8 @@ draft: false
   }
 
   function checkCollision(a, b) {
-    const padX = 6;
-    const padY = 5;
+    const padX = 7;
+    const padY = 6;
     return (
       a.x + padX < b.x + b.w - padX &&
       a.x + a.w - padX > b.x + padX &&
@@ -283,52 +288,53 @@ draft: false
 
   function startOrRestart() {
     score = 0;
-    speed = 6;
-    frameCount = 0;
+    speed = BASE_SPEED;
+    animTick = 0;
     flashTimer = 0;
     obstacles = [];
     dino.reset();
     gameState = "PLAYING";
+    lastTime = performance.now();
     dino.jump();
   }
 
-  let nextSpawnGap = 75;
+  let nextSpawnGap = 260;
 
-  function update() {
+  function update(dt) {
     if (gameState !== "PLAYING") return;
 
-    frameCount++;
+    animTick += dt;
     const prevHundred = Math.floor(score / 100);
-    score += 0.16;
+    score += 0.12 * dt;
     const currHundred = Math.floor(score / 100);
     if (currHundred > prevHundred && currHundred > 0) {
       flashTimer = 36;
       flashScoreValue = currHundred * 100;
     }
-    if (flashTimer > 0) flashTimer--;
+    if (flashTimer > 0) flashTimer -= dt;
 
-    speed = Math.min(13.5, 6 + score * 0.0045);
+    speed = Math.min(MAX_SPEED, BASE_SPEED + score * 0.0022);
 
     clouds.forEach((c) => {
-      c.x -= c.speed;
+      c.x -= c.speed * dt;
       if (c.x < -40) c.x = WIDTH + 20;
     });
     groundBumps.forEach((b) => {
-      b.x -= speed;
+      b.x -= speed * dt;
       if (b.x < -10) b.x = WIDTH + Math.random() * 20;
     });
 
-    dino.update();
+    dino.update(dt);
 
     const lastObs = obstacles[obstacles.length - 1];
     if (!lastObs || WIDTH - lastObs.x >= nextSpawnGap) {
       spawnObstacle();
-      nextSpawnGap = 190 + Math.random() * 210 + speed * 8;
+      nextSpawnGap = 240 + Math.random() * 220 + speed * 14;
     }
 
     for (let i = obstacles.length - 1; i >= 0; i--) {
       const obs = obstacles[i];
-      obs.x -= speed;
+      obs.x -= speed * dt;
       if (checkCollision(dino, obs)) {
         gameState = "GAMEOVER";
         if (score > highScore) {
@@ -352,8 +358,13 @@ draft: false
     drawOverlay();
   }
 
-  function loop() {
-    update();
+  function loop(timestamp) {
+    if (!lastTime) lastTime = timestamp;
+    // 60FPS(약 16.67ms) 기준으로 프레임 속도 고정 (고주사율 모니터 가속 방지)
+    const dt = Math.min((timestamp - lastTime) / 16.667, 2.5);
+    lastTime = timestamp;
+
+    update(dt);
     render();
     requestAnimationFrame(loop);
   }
@@ -389,7 +400,6 @@ draft: false
     }
   });
 
-  loop();
+  requestAnimationFrame(loop);
 })();
 </script>
-
