@@ -66,7 +66,7 @@ draft: false
   let gameState = "WAITING";
   let score = 0;
   let highScore = Number(localStorage.getItem("hermit_dino_hi") || 0);
-  let speed = 6;
+  let speed = 2;
   let frameCount = 0;
   let flashTimer = 0;
   let flashScoreValue = 0;
