@@ -26,6 +26,13 @@
     "template"
   ],
   "title": "LEO's homepage",
+  "markup": {
+    "goldmark": {
+      "renderer": {
+        "unsafe": true
+      }
+    }
+  },
   "params": {
     "themeColor": "#494f5c",
     "accentColor": "#018472",
