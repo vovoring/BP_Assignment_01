@@ -17,15 +17,67 @@
     content: "▶ ";
     font-size: 0.8em;
   }
+
+  /* 왼쪽 위 <- esc 표시 스타일 */
+  .esc-back-btn {
+    position: fixed;
+    top: 1.2rem;
+    left: 1.5rem;
+    z-index: 1000;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.9rem;
+    font-family: monospace;
+    color: #eeeeee;
+    background-color: rgba(59, 62, 72, 0.85);
+    border: 1px solid rgba(238, 238, 238, 0.25);
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .esc-back-btn:hover,
+  .esc-back-btn:focus {
+    color: #018472 !important;
+    border-color: #018472;
+    background-color: rgba(1, 132, 114, 0.15);
+  }
 </style>
+
+{{ if not .IsHome }}
+<a href="{{ .Site.BaseURL }}" id="esc-back-btn" class="esc-back-btn" title="뒤로 가기 (ESC)">&lt;- esc</a>
+{{ end }}
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+    const isHome = {{ if .IsHome }}true{{ else }}false{{ end }};
+    const homeUrl = "{{ .Site.BaseURL }}";
+
+    // 뒤로 가기 함수 (이전 방문 기록이 같은 사이트면 뒤로 이동, 아니면 메인 화면으로 이동)
+    const goBack = () => {
+      if (isHome) return;
+      if (document.referrer && document.referrer.startsWith(window.location.origin) && window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = homeUrl;
+      }
+    };
+
+    // 왼쪽 위 <- esc 버튼 클릭 이벤트
+    const escBtn = document.getElementById("esc-back-btn");
+    if (escBtn) {
+      escBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        goBack();
+      });
+    }
+
     // 메인 화면이면 #home-nav 메뉴들을, 글 목록 화면이면 게시글 링크들을 대상으로 지정
     const items = Array.from(
       document.querySelectorAll("#home-nav a, .pinned-post-item > a, .post-item > a")
     );
-    if (items.length === 0) return;
 
     let currentIndex = 0;
 
@@ -41,20 +93,30 @@
       });
     };
 
-    // 페이지 진입 시 첫 번째 항목을 기본 선택 상태로 표시
-    updateSelection(currentIndex);
+    if (items.length > 0) {
+      // 페이지 진입 시 첫 번째 항목을 기본 선택 상태로 표시
+      updateSelection(currentIndex);
 
-    // 마우스를 올리면 해당 항목으로 선택 위치 동기화
-    items.forEach((el, idx) => {
-      el.addEventListener("mouseenter", () => {
-        currentIndex = idx;
-        updateSelection(currentIndex);
+      // 마우스를 올리면 해당 항목으로 선택 위치 동기화
+      items.forEach((el, idx) => {
+        el.addEventListener("mouseenter", () => {
+          currentIndex = idx;
+          updateSelection(currentIndex);
+        });
       });
-    });
+    }
 
-    // 위/아래 방향키 및 엔터 키 조작 이벤트
+    // 위/아래 방향키, 엔터 키, ESC 키 조작 이벤트
     document.addEventListener("keydown", (e) => {
       if (["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) return;
+
+      if (e.key === "Escape") {
+        e.preventDefault();
+        goBack();
+        return;
+      }
+
+      if (items.length === 0) return;
 
       if (e.key === "ArrowDown") {
         e.preventDefault();
