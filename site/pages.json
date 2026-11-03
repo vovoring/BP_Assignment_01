@@ -22,10 +22,6 @@
       "^text/"
     ]
   },
-  "theme": [
-    "template"
-  ],
-  "title": "LEO's homepage",
   "markup": {
     "goldmark": {
       "renderer": {
@@ -33,6 +29,10 @@
       }
     }
   },
+  "theme": [
+    "template"
+  ],
+  "title": "LEO's homepage",
   "params": {
     "themeColor": "#494f5c",
     "accentColor": "#018472",
@@ -49,7 +49,7 @@
       "categories"
     ],
     "author": {
-      "name": "LEO"
+      "name": "false"
     },
     "socialLinks": [
       {
