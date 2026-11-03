@@ -106,7 +106,7 @@
       });
     }
 
-    // 위/아래 방향키, 엔터 키, ESC 키 조작 이벤트
+    // 위/아래 방향키(순환 없음), 엔터 키, ESC 키 조작 이벤트
     document.addEventListener("keydown", (e) => {
       if (["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) return;
 
@@ -120,12 +120,16 @@
 
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        currentIndex = (currentIndex + 1) % items.length;
-        updateSelection(currentIndex);
+        if (currentIndex < items.length - 1) {
+          currentIndex++;
+          updateSelection(currentIndex);
+        }
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        currentIndex = (currentIndex - 1 + items.length) % items.length;
-        updateSelection(currentIndex);
+        if (currentIndex > 0) {
+          currentIndex--;
+          updateSelection(currentIndex);
+        }
       } else if (e.key === "Enter" && currentIndex >= 0 && items[currentIndex]) {
         e.preventDefault();
         window.location.href = items[currentIndex].href;
