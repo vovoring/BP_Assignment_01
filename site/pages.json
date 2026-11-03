@@ -34,7 +34,7 @@
     "footerCopyright": "LEO",
     "code_copy_button": true,
     "scrollToTop": true,
-    "shareSocial": true,
+    "shareSocial": false,
     "usesAnimation": true,
     "listLayout": [
       "description",
