@@ -66,6 +66,11 @@
         "name": "About",
         "url": "about/",
         "weight": 20
+      },
+      {
+        "name": "Game",
+        "url": "game/",
+        "weight": 30
       }
     ]
   }
