@@ -963,6 +963,13 @@ a.footnote-ref {
     opacity: $post-nav-label-opacity;
     text-transform: uppercase;
   }
+
+  .post-nav-label svg {
+    width: 1.8rem;
+    height: 1.8rem;
+    stroke-width: 2.5;
+    vertical-align: middle;
+  }
 }
 
 // ==========================================
