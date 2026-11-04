@@ -126,3 +126,22 @@ if (header !== null) {
     }
   }, 250));
 }
+
+// 좌우 방향키(← / →)로 이전/다음 게시글 이동
+document.addEventListener('keydown', (e) => {
+  // 입력창(댓글 등) 포커스 상태나 조합키(Alt, Ctrl 등) 입력 시 단축키 무시
+  if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) || document.activeElement.isContentEditable) return;
+  if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+
+  if (e.key === 'ArrowLeft') {
+    const leftPost = document.querySelector('.post-nav .next-post');
+    if (leftPost && leftPost.href) {
+      window.location.href = leftPost.href;
+    }
+  } else if (e.key === 'ArrowRight') {
+    const rightPost = document.querySelector('.post-nav .prev-post');
+    if (rightPost && rightPost.href) {
+      window.location.href = rightPost.href;
+    }
+  }
+});

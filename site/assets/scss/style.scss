@@ -1252,3 +1252,11 @@ a.footnote-ref {
 // ==========================================
 // Import user-specific custom styles if they exist - these will override all built-in styles
 {{ with resources.Get "scss/_userstyles.scss" }}@import "userstyles";{{ end }}
+
+// 이전/다음 글 네비게이션 화살표 크기 확대
+.post-nav-label svg {
+  width: 1.8rem;
+  height: 1.8rem;
+  stroke-width: 2.5;
+  vertical-align: middle;
+}
