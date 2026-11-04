@@ -116,16 +116,13 @@
     padding: 2px 0 6px 0 !important;
   }
 
-  /* 키보드 탐색 대상 링크의 브라우저 기본 흰색 포커스 링 제거 (깜빡임 방지) */
-  #home-nav a,
-  #home-nav a:focus,
-  #home-nav a:focus-visible,
-  .pinned-post-item > a,
-  .pinned-post-item > a:focus,
-  .pinned-post-item > a:focus-visible,
-  .post-item > a,
-  .post-item > a:focus,
-  .post-item > a:focus-visible {
+  /* 브라우저 기본 흰색 포커스 링(화이트링) 전역 제거 */
+  a,
+  a:focus,
+  a:focus-visible,
+  button,
+  button:focus,
+  button:focus-visible {
     outline: none !important;
     box-shadow: none !important;
     -webkit-tap-highlight-color: transparent;
@@ -135,7 +132,7 @@
   .post-item.kb-selected,
   .post-item:has(> a.kb-selected) {
     background-color: rgba(1, 132, 114, 0.12);
-    outline: 1px solid rgba(1, 132, 114, 0.5);
+    outline: 1px solid rgba(1, 132, 114, 0.5) !important;
     border-bottom-color: transparent !important;
   }
 
@@ -143,7 +140,6 @@
   .post-item:has(> a.kb-selected) > a {
     color: #018472 !important;
     background: none !important;
-    outline: none !important;
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
@@ -151,7 +147,16 @@
   html.light-theme .post-item.kb-selected,
   html.light-theme .post-item:has(> a.kb-selected) {
     background-color: rgba(1, 132, 114, 0.15);
-    outline-color: #018472;
+    outline-color: #018472 !important;
+  }
+
+  /* post 상세 페이지 하단 이전/다음 글 링크 및 일반 링크 Tab 포커스 시 커스텀 초록색 박스 적용 */
+  .post-nav a:focus,
+  .post-nav a:focus-visible {
+    color: #018472 !important;
+    background-color: rgba(1, 132, 114, 0.12) !important;
+    border-radius: 6px;
+    outline: 1px solid rgba(1, 132, 114, 0.5) !important;
   }
 
   /* 스크롤 여백 */
