@@ -32,7 +32,7 @@
   "theme": [
     "template"
   ],
-  "disableKinds: [
+  "disableKinds": [
 	"RSS"
   ],
   "title": "LEO's homepage",
