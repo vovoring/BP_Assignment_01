@@ -32,6 +32,9 @@
   "theme": [
     "template"
   ],
+  "disableKinds: [
+	"RSS"
+  ],
   "title": "LEO's homepage",
   "params": {
     "themeColor": "#494f5c",
