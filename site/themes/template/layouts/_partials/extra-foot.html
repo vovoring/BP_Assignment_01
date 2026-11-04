@@ -311,10 +311,17 @@
 </style>
 
 <script>
-  // 모든 페이지 로드 즉시 저장된 테마를 적용해 깜빡임 방지
-  if (localStorage.getItem("hermit_theme") === "light") {
-    document.documentElement.classList.add("light-theme");
-  }
+  // 초기 로드, 뒤로가기(BFCache 복원), 탭 전환 시 항상 최신 테마 상태로 동기화
+  const syncTheme = () => {
+    const isLight = localStorage.getItem("hermit_theme") === "light";
+    document.documentElement.classList.toggle("light-theme", isLight);
+  };
+  syncTheme();
+  window.addEventListener("pageshow", syncTheme);
+  window.addEventListener("focus", syncTheme);
+  window.addEventListener("storage", syncTheme);
+  document.addEventListener("visibilitychange", syncTheme);
+  document.addEventListener("prerenderingchange", syncTheme);
 </script>
 
 {{ if not .IsHome }}
@@ -382,6 +389,8 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+    syncTheme();
+
     const escBtn = document.getElementById("esc-back-btn");
     const siteHeader = document.getElementById("site-header");
     const themeBtn = document.getElementById("theme-toggle-btn");
