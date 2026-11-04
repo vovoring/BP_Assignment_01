@@ -8,7 +8,7 @@ draft: false
 
 저는 23학년도에 전북대학교 컴퓨터 인공지능학부에 입학을 해 26년 현재 2학년입니다.
 
-<a href="https://youtu.be/SlFyMldFBJs"><img src="..\..\images\portfolio.png" alt="게임개발 동아리 입부영상"></a>
+<a href="https://youtu.be/SlFyMldFBJs"><img src="../themes/template/images/portfolio.png" alt="게임개발 동아리 입부영상"></a>
 
 해당 영상은 제가 GPU에 입부할 때 만들었던 정말 간단한 점프맵입니다. 제대로 된 에셋도 없이 겉모습보다는 코드 작성에 의의를 두어 다양한 움직임을 표현했던 것 같습니다.
 
