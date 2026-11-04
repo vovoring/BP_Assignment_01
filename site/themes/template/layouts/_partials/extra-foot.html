@@ -116,7 +116,22 @@
     padding: 2px 0 6px 0 !important;
   }
 
-  /* 키보드 방향키로 선택 시 제목 + 설명 + 태그 전체를 감싸는 스타일 */
+  /* 키보드 탐색 대상 링크의 브라우저 기본 흰색 포커스 링 제거 (깜빡임 방지) */
+  #home-nav a,
+  #home-nav a:focus,
+  #home-nav a:focus-visible,
+  .pinned-post-item > a,
+  .pinned-post-item > a:focus,
+  .pinned-post-item > a:focus-visible,
+  .post-item > a,
+  .post-item > a:focus,
+  .post-item > a:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 키보드 방향키로 선택 시 제목뿐 아니라 설명 및 태그까지 전체 박스로 감싸는 스타일 */
   .post-item.kb-selected,
   .post-item:has(> a.kb-selected) {
     background-color: rgba(1, 132, 114, 0.12);
