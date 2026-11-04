@@ -325,7 +325,11 @@
 </script>
 
 {{ if not .IsHome }}
-<a href="{{ .Site.BaseURL }}" id="esc-back-btn" class="esc-back-btn" title="뒤로 가기 (ESC)">&lt;- esc</a>
+  {{- $backURL := .Site.BaseURL -}}
+  {{- if and .IsPage (eq .Section "posts") -}}
+    {{- $backURL = ("posts/" | absLangURL) -}}
+  {{- end -}}
+  <a href="{{ $backURL }}" id="esc-back-btn" class="esc-back-btn" title="상위 페이지로 나가기 (ESC)">&lt;- esc</a>
 {{ end }}
 
 <div class="bottom-right-controls">
@@ -379,7 +383,7 @@
         <span class="kb-key">Tab</span>
       </li>
       <li class="kb-shortcut-item">
-        <span>이전 화면으로 나가기</span>
+        <span>상위 화면으로 나가기</span>
         <span class="kb-key">ESC</span>
       </li>
     </ul>
@@ -423,14 +427,10 @@
       });
     }
 
-    // 뒤로 가기 함수 (메인 화면에서는 escBtn이 없으므로 작동하지 않음)
+    // 계층 구조 기반 상위 페이지 이동 함수 (글 상세 -> Posts 목록 -> 메인 화면)
     const goBack = () => {
       if (!escBtn) return;
-      if (document.referrer && document.referrer.startsWith(window.location.origin) && window.history.length > 1) {
-        window.history.back();
-      } else {
-        window.location.href = escBtn.href;
-      }
+      window.location.href = escBtn.href;
     };
 
     if (escBtn) {
