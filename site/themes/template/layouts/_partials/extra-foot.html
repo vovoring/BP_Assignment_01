@@ -70,9 +70,8 @@
     border-color: #dce0e6 !important;
   }
 
-  /* 키보드 방향키로 선택된 메뉴/게시글 강조 스타일 */
+  /* 키보드 방향키로 선택된 메뉴 강조 스타일 */
   #home-nav a.kb-selected,
-  .post-item > a.kb-selected,
   .pinned-post-item > a.kb-selected {
     color: #018472 !important;
     background-color: rgba(1, 132, 114, 0.12);
@@ -83,19 +82,44 @@
     transition: all 0.15s ease;
   }
 
-  /* 사이트 내 모든 링크/버튼을 Tab 키로 선택했을 때의 포커스 표시 */
-  a:focus-visible,
-  button:focus-visible,
-  [tabindex]:focus-visible {
-    color: #018472 !important;
-    background-color: rgba(1, 132, 114, 0.15);
+  /* Posts 목록의 게시글 항목 전체 카드 스타일 */
+  .post-item {
+    padding: 8px 12px 12px 12px !important;
+    margin: 4px -12px !important;
     border-radius: 6px;
-    outline: 2px solid #018472 !important;
-    outline-offset: 2px;
+    cursor: pointer;
     transition: all 0.15s ease;
   }
 
-  /* Posts 목록에서 위/아래 이동 시 상단 및 하단 고정 바에 가려지지 않도록 여백 확보 */
+  .post-item > a {
+    padding: 2px 0 6px 0 !important;
+  }
+
+  /* 키보드 방향키로 선택 시 제목 + 설명 + 태그 전체를 감싸는 스타일 */
+  .post-item.kb-selected,
+  .post-item:has(> a.kb-selected) {
+    background-color: rgba(1, 132, 114, 0.12);
+    outline: 1px solid rgba(1, 132, 114, 0.5);
+    border-bottom-color: transparent !important;
+  }
+
+  .post-item.kb-selected > a,
+  .post-item:has(> a.kb-selected) > a {
+    color: #018472 !important;
+    background: none !important;
+    outline: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  html.light-theme .post-item.kb-selected,
+  html.light-theme .post-item:has(> a.kb-selected) {
+    background-color: rgba(1, 132, 114, 0.15);
+    outline-color: #018472;
+  }
+
+  /* 스크롤 여백 */
+  .post-item,
   .post-item > a,
   .pinned-post-item > a {
     scroll-margin-top: 80px;
@@ -448,21 +472,28 @@
     let usingKeyboard = false;
 
     const clearItemSelection = () => {
-      items.forEach((el) => el.classList.remove("kb-selected"));
+      items.forEach((el) => {
+        el.classList.remove("kb-selected");
+        const parentItem = el.closest(".post-item, .pinned-post-item");
+        if (parentItem) parentItem.classList.remove("kb-selected");
+      });
     };
 
     const updateSelection = (index, shouldScroll = true, shouldFocus = true) => {
       items.forEach((el, i) => {
+        const parentItem = el.closest(".post-item, .pinned-post-item");
         if (i === index) {
           el.classList.add("kb-selected");
+          if (parentItem) parentItem.classList.add("kb-selected");
           if (shouldFocus) {
             el.focus({ preventScroll: true });
           }
           if (shouldScroll) {
-            el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+            (parentItem || el).scrollIntoView({ block: "nearest", behavior: "smooth" });
           }
         } else {
           el.classList.remove("kb-selected");
+          if (parentItem) parentItem.classList.remove("kb-selected");
         }
       });
     };
@@ -475,10 +506,22 @@
       }, { passive: true });
 
       items.forEach((el, idx) => {
-        el.addEventListener("mouseenter", () => {
+        const trigger = el.closest(".post-item, .pinned-post-item") || el;
+        trigger.addEventListener("mouseenter", () => {
           if (usingKeyboard) return;
           currentIndex = idx;
           updateSelection(currentIndex, false, false);
+        });
+      });
+
+      // 게시글 카드 영역 클릭 시 이동
+      document.querySelectorAll(".post-item").forEach((item) => {
+        item.addEventListener("click", (e) => {
+          if (e.target.closest("a")) return;
+          const postLink = item.querySelector("> a");
+          if (postLink && postLink.href) {
+            window.location.href = postLink.href;
+          }
         });
       });
     }
