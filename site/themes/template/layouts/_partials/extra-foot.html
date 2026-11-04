@@ -37,7 +37,7 @@
     font-size: 0.8em;
   }
 
-  /* 왼쪽 위 <- esc 표시 스타일 */
+  /* 왼쪽 위 <- esc 표시 스타일 (하위 페이지 전용) */
   .esc-back-btn {
     position: fixed;
     top: 1.2rem;
@@ -63,16 +63,180 @@
     border-color: #018472;
     background-color: rgba(1, 132, 114, 0.15);
   }
+
+  /* 오른쪽 아래 단축키 도움말 버튼 (메인 화면 전용) */
+  .kb-help-btn {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 1000;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.9rem;
+    font-family: monospace;
+    color: #eeeeee;
+    background-color: rgba(59, 62, 72, 0.9);
+    border: 1px solid rgba(238, 238, 238, 0.25);
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.15s ease;
+  }
+
+  .kb-help-btn:hover {
+    color: #018472;
+    border-color: #018472;
+    background-color: rgba(1, 132, 114, 0.15);
+  }
+
+  /* 단축키 안내 모달 배경 및 창 스타일 */
+  .kb-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+  }
+
+  .kb-modal-overlay.open {
+    display: flex;
+  }
+
+  .kb-modal-box {
+    width: 90%;
+    max-width: 380px;
+    background-color: #3b3e48;
+    border: 1px solid rgba(1, 132, 114, 0.6);
+    border-radius: 12px;
+    padding: 1.3rem 1.5rem;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+    color: #eeeeee;
+  }
+
+  .kb-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(238, 238, 238, 0.15);
+    padding-bottom: 0.7rem;
+    margin-bottom: 1rem;
+  }
+
+  .kb-modal-title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: bold;
+    color: #018472;
+  }
+
+  .kb-modal-close {
+    background: none;
+    border: none;
+    color: #cccccc;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+  }
+
+  .kb-modal-close:hover {
+    color: #ffffff;
+  }
+
+  .kb-shortcut-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    font-size: 0.9rem;
+  }
+
+  .kb-shortcut-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .kb-key {
+    font-family: monospace;
+    font-size: 0.82rem;
+    background-color: #2c3e50;
+    border: 1px solid rgba(238, 238, 238, 0.25);
+    border-radius: 5px;
+    padding: 0.18rem 0.5rem;
+    color: #eeeeee;
+  }
 </style>
 
 {{ if not .IsHome }}
 <a href="{{ .Site.BaseURL }}" id="esc-back-btn" class="esc-back-btn" title="뒤로 가기 (ESC)">&lt;- esc</a>
 {{ end }}
 
+{{ if .IsHome }}
+<div id="kb-help-btn" class="kb-help-btn" title="조작법 안내">
+  <span>?</span>
+  <span>조작법</span>
+</div>
+
+<div id="kb-help-modal" class="kb-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="kb-modal-title">
+  <div class="kb-modal-box">
+    <div class="kb-modal-header">
+      <h3 id="kb-modal-title" class="kb-modal-title">⌨️ 키보드 조작 안내</h3>
+      <button type="button" id="kb-modal-close" class="kb-modal-close" aria-label="닫기">✕</button>
+    </div>
+    <ul class="kb-shortcut-list">
+      <li class="kb-shortcut-item">
+        <span>메뉴 / 게시글 선택</span>
+        <span class="kb-key">↑ / ↓</span>
+      </li>
+      <li class="kb-shortcut-item">
+        <span>선택한 페이지 이동</span>
+        <span class="kb-key">Enter</span>
+      </li>
+      <li class="kb-shortcut-item">
+        <span>전체 버튼 / 아이콘 탐색</span>
+        <span class="kb-key">Tab</span>
+      </li>
+      <li class="kb-shortcut-item">
+        <span>이전 화면으로 나가기</span>
+        <span class="kb-key">ESC</span>
+      </li>
+    </ul>
+  </div>
+</div>
+{{ end }}
+
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const escBtn = document.getElementById("esc-back-btn");
     const siteHeader = document.getElementById("site-header");
+    const helpBtn = document.getElementById("kb-help-btn");
+    const helpModal = document.getElementById("kb-help-modal");
+    const helpClose = document.getElementById("kb-modal-close");
+
+    // 도움말 모달은 마우스 클릭으로만 열림
+    if (helpBtn && helpModal) {
+      helpBtn.addEventListener("click", () => {
+        helpModal.classList.add("open");
+      });
+      if (helpClose) {
+        helpClose.addEventListener("click", () => {
+          helpModal.classList.remove("open");
+        });
+      }
+      helpModal.addEventListener("click", (e) => {
+        if (e.target === helpModal) {
+          helpModal.classList.remove("open");
+        }
+      });
+    }
 
     // 뒤로 가기 함수 (메인 화면에서는 escBtn이 없으므로 작동하지 않음)
     const goBack = () => {
@@ -119,10 +283,8 @@
     };
 
     if (items.length > 0) {
-      // 초기 진입 시 첫 번째 항목에 포커스 및 선택 표시
       updateSelection(currentIndex, false, true);
 
-      // 마우스를 실제로 움직였을 때만 마우스 호버 선택 허용
       window.addEventListener("mousemove", () => {
         usingKeyboard = false;
       }, { passive: true });
@@ -141,7 +303,6 @@
       const target = e.target;
       if (!target) return;
 
-      // 하단 고정 헤더(#site-header) 내부 요소를 Tab으로 선택하면 숨겨진 헤더를 위로 표시
       if (siteHeader && siteHeader.contains(target)) {
         siteHeader.classList.remove("slideOutDown");
         siteHeader.classList.add("slideInUp");
@@ -154,13 +315,21 @@
         currentIndex = idx;
         updateSelection(currentIndex, true, false);
       } else {
-        // Tab 포커스가 게시글/메인메뉴 밖(예: LEO's homepage, About, 공유 버튼 등)으로 이동하면 기존 선택 표시 해제
         clearItemSelection();
       }
     });
 
     document.addEventListener("keydown", (e) => {
       if (["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) return;
+
+      // 도움말 모달이 열려 있을 때는 ESC로 닫기만 허용하고 배경 메뉴 이동 방지
+      if (helpModal && helpModal.classList.contains("open")) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          helpModal.classList.remove("open");
+        }
+        return;
+      }
 
       if (e.key === "Escape") {
         e.preventDefault();
@@ -173,7 +342,6 @@
       if (e.key === "ArrowDown") {
         e.preventDefault();
         usingKeyboard = true;
-        // 만약 Tab으로 다른 곳(하단 헤더 등)에 포커스가 가 있었다면 현재 인덱스로 복귀, 아니면 한 칸 아래로 이동
         if (!items.includes(document.activeElement)) {
           updateSelection(currentIndex, true, true);
         } else if (currentIndex < items.length - 1) {
@@ -191,11 +359,9 @@
         }
       } else if (e.key === "Enter") {
         const active = document.activeElement;
-        // Tab으로 다른 링크(<a>)나 버튼(<button>)이 포커스되어 있다면 브라우저 기본 Enter 동작(해당 링크 이동)을 그대로 수행
         if (active && active !== document.body && !items.includes(active)) {
           return;
         }
-        // 게시글/메인메뉴 항목이 선택된 상태일 때만 currentIndex 링크로 이동
         if (currentIndex >= 0 && items[currentIndex]) {
           e.preventDefault();
           window.location.href = items[currentIndex].href;
