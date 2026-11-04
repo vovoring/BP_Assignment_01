@@ -873,6 +873,30 @@ a.footnote-ref {
   line-height: normal;
   @include dimmed;
 
+  .post-meta-desc {
+    margin-bottom: 0.65em;
+    font-size: 1.05em;
+    line-height: 1.5;
+    color: inherit;
+  }
+
+  .post-meta-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 0.4em;
+    line-height: 1.6;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .post-meta-separator {
+    opacity: 0.5;
+    user-select: none;
+  }
+
   p {
     margin: $post-description-p-margin;
   }
@@ -883,6 +907,7 @@ a.footnote-ref {
 
   svg {
     margin-right: $post-description-svg-margin-right;
+    flex-shrink: 0;
   }
 
   .tag, 
