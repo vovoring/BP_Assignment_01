@@ -1,5 +1,5 @@
 <style>
-  /* 키보드로 선택된 메뉴/게시글 강조 스타일 */
+  /* 키보드 방향키로 선택된 메뉴/게시글 강조 스타일 */
   #home-nav a.kb-selected,
   .post-item > a.kb-selected,
   .pinned-post-item > a.kb-selected {
@@ -10,6 +10,25 @@
     padding-left: 10px;
     padding-right: 10px;
     transition: all 0.15s ease;
+  }
+
+  /* 사이트 내 모든 링크/버튼을 Tab 키로 선택했을 때의 포커스 표시 */
+  a:focus-visible,
+  button:focus-visible,
+  [tabindex]:focus-visible {
+    color: #018472 !important;
+    background-color: rgba(1, 132, 114, 0.15);
+    border-radius: 6px;
+    outline: 2px solid #018472 !important;
+    outline-offset: 2px;
+    transition: all 0.15s ease;
+  }
+
+  /* Posts 목록에서 위/아래 이동 시 상단 및 하단 고정 바에 가려지지 않도록 여백 확보 */
+  .post-item > a,
+  .pinned-post-item > a {
+    scroll-margin-top: 80px;
+    scroll-margin-bottom: 90px;
   }
 
   /* 메인 화면 메뉴에 화살표(▶) 표시 추가 */
@@ -52,21 +71,19 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const isHome = {{ if .IsHome }}true{{ else }}false{{ end }};
-    const homeUrl = "{{ .Site.BaseURL }}";
+    const escBtn = document.getElementById("esc-back-btn");
+    const siteHeader = document.getElementById("site-header");
 
-    // 뒤로 가기 함수 (이전 방문 기록이 같은 사이트면 뒤로 이동, 아니면 메인 화면으로 이동)
+    // 뒤로 가기 함수 (메인 화면에서는 escBtn이 없으므로 작동하지 않음)
     const goBack = () => {
-      if (isHome) return;
+      if (!escBtn) return;
       if (document.referrer && document.referrer.startsWith(window.location.origin) && window.history.length > 1) {
         window.history.back();
       } else {
-        window.location.href = homeUrl;
+        window.location.href = escBtn.href;
       }
     };
 
-    // 왼쪽 위 <- esc 버튼 클릭 이벤트
-    const escBtn = document.getElementById("esc-back-btn");
     if (escBtn) {
       escBtn.addEventListener("click", (e) => {
         e.preventDefault();
@@ -74,19 +91,27 @@
       });
     }
 
-    // 메인 화면이면 #home-nav 메뉴들을, 글 목록 화면이면 게시글 링크들을 대상으로 지정
     const items = Array.from(
       document.querySelectorAll("#home-nav a, .pinned-post-item > a, .post-item > a")
     );
 
     let currentIndex = 0;
+    let usingKeyboard = false;
 
-    const updateSelection = (index) => {
+    const clearItemSelection = () => {
+      items.forEach((el) => el.classList.remove("kb-selected"));
+    };
+
+    const updateSelection = (index, shouldScroll = true, shouldFocus = true) => {
       items.forEach((el, i) => {
         if (i === index) {
           el.classList.add("kb-selected");
-          el.focus({ preventScroll: true });
-          el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+          if (shouldFocus) {
+            el.focus({ preventScroll: true });
+          }
+          if (shouldScroll) {
+            el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+          }
         } else {
           el.classList.remove("kb-selected");
         }
@@ -94,19 +119,46 @@
     };
 
     if (items.length > 0) {
-      // 페이지 진입 시 첫 번째 항목을 기본 선택 상태로 표시
-      updateSelection(currentIndex);
+      // 초기 진입 시 첫 번째 항목에 포커스 및 선택 표시
+      updateSelection(currentIndex, false, true);
 
-      // 마우스를 올리면 해당 항목으로 선택 위치 동기화
+      // 마우스를 실제로 움직였을 때만 마우스 호버 선택 허용
+      window.addEventListener("mousemove", () => {
+        usingKeyboard = false;
+      }, { passive: true });
+
       items.forEach((el, idx) => {
         el.addEventListener("mouseenter", () => {
+          if (usingKeyboard) return;
           currentIndex = idx;
-          updateSelection(currentIndex);
+          updateSelection(currentIndex, false, false);
         });
       });
     }
 
-    // 위/아래 방향키(순환 없음), 엔터 키, ESC 키 조작 이벤트
+    // Tab 키 등으로 포커스가 이동할 때 선택 상태 동기화 및 하단 헤더 자동 표시
+    document.addEventListener("focusin", (e) => {
+      const target = e.target;
+      if (!target) return;
+
+      // 하단 고정 헤더(#site-header) 내부 요소를 Tab으로 선택하면 숨겨진 헤더를 위로 표시
+      if (siteHeader && siteHeader.contains(target)) {
+        siteHeader.classList.remove("slideOutDown");
+        siteHeader.classList.add("slideInUp");
+      }
+
+      if (items.length === 0) return;
+
+      const idx = items.indexOf(target);
+      if (idx !== -1) {
+        currentIndex = idx;
+        updateSelection(currentIndex, true, false);
+      } else {
+        // Tab 포커스가 게시글/메인메뉴 밖(예: LEO's homepage, About, 공유 버튼 등)으로 이동하면 기존 선택 표시 해제
+        clearItemSelection();
+      }
+    });
+
     document.addEventListener("keydown", (e) => {
       if (["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) return;
 
@@ -120,19 +172,34 @@
 
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        if (currentIndex < items.length - 1) {
-          currentIndex++;
-          updateSelection(currentIndex);
+        usingKeyboard = true;
+        // 만약 Tab으로 다른 곳(하단 헤더 등)에 포커스가 가 있었다면 현재 인덱스로 복귀, 아니면 한 칸 아래로 이동
+        if (!items.includes(document.activeElement)) {
+          updateSelection(currentIndex, true, true);
+        } else if (currentIndex < items.length - 1) {
+          currentIndex = Math.min(items.length - 1, currentIndex + 1);
+          updateSelection(currentIndex, true, true);
         }
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        if (currentIndex > 0) {
-          currentIndex--;
-          updateSelection(currentIndex);
+        usingKeyboard = true;
+        if (!items.includes(document.activeElement)) {
+          updateSelection(currentIndex, true, true);
+        } else if (currentIndex > 0) {
+          currentIndex = Math.max(0, currentIndex - 1);
+          updateSelection(currentIndex, true, true);
         }
-      } else if (e.key === "Enter" && currentIndex >= 0 && items[currentIndex]) {
-        e.preventDefault();
-        window.location.href = items[currentIndex].href;
+      } else if (e.key === "Enter") {
+        const active = document.activeElement;
+        // Tab으로 다른 링크(<a>)나 버튼(<button>)이 포커스되어 있다면 브라우저 기본 Enter 동작(해당 링크 이동)을 그대로 수행
+        if (active && active !== document.body && !items.includes(active)) {
+          return;
+        }
+        // 게시글/메인메뉴 항목이 선택된 상태일 때만 currentIndex 링크로 이동
+        if (currentIndex >= 0 && items[currentIndex]) {
+          e.preventDefault();
+          window.location.href = items[currentIndex].href;
+        }
       }
     });
   });
