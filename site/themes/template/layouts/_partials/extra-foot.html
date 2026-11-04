@@ -1,12 +1,25 @@
 <style>
   /* ==========================================
-     라이트 테마 (html.light-theme) 색상 스타일
+     라이트 테마 (html.light-theme) 전 페이지 스타일
      ========================================== */
   html.light-theme,
   html.light-theme body {
     background-color: #f5f7fa !important;
     color: #22252a !important;
     transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  html.light-theme h1,
+  html.light-theme h2,
+  html.light-theme h3,
+  html.light-theme h4,
+  html.light-theme h5,
+  html.light-theme h6,
+  html.light-theme p,
+  html.light-theme li,
+  html.light-theme span,
+  html.light-theme div {
+    color: inherit;
   }
 
   html.light-theme a,
@@ -18,7 +31,7 @@
   }
 
   html.light-theme a:hover {
-    color: #018472;
+    color: #018472 !important;
     text-shadow: none;
   }
 
@@ -27,18 +40,34 @@
   html.light-theme #share-links {
     background-color: #ffffff !important;
     border-color: #dce0e6 !important;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08) !important;
   }
 
   html.light-theme .post-item,
-  html.light-theme .pinned-posts-group {
-    border-bottom-color: #dce0e6 !important;
+  html.light-theme .pinned-posts-group,
+  html.light-theme hr {
+    border-color: #dce0e6 !important;
+  }
+
+  html.light-theme .post-year,
+  html.light-theme .post-day,
+  html.light-theme .post-date,
+  html.light-theme .post-description,
+  html.light-theme #home-footer,
+  html.light-theme #site-footer {
+    color: #555b66 !important;
   }
 
   html.light-theme pre,
   html.light-theme code {
     background-color: #e9ecef !important;
     color: #22252a !important;
+  }
+
+  html.light-theme .dino-controls-hint span {
+    background-color: #ffffff !important;
+    color: #22252a !important;
+    border-color: #dce0e6 !important;
   }
 
   /* 키보드 방향키로 선택된 메뉴/게시글 강조 스타일 */
@@ -106,20 +135,20 @@
     background-color: rgba(1, 132, 114, 0.15);
   }
 
-  /* 오른쪽 아래 버튼 묶음 컨테이너 (메인 화면 전용) */
-  .home-bottom-right-controls {
+  /* 오른쪽 아래 버튼 묶음 컨테이너 (모든 페이지 공통, 하위 페이지에서는 하단 헤더 바 위로 배치) */
+  .bottom-right-controls {
     position: fixed;
-    bottom: 1.5rem;
+    bottom: {{ if .IsHome }}1.5rem{{ else }}3.6rem{{ end }};
     right: 1.5rem;
-    z-index: 1000;
+    z-index: 1001;
     display: flex;
     align-items: center;
     gap: 0.55rem;
   }
 
-  /* 테마 전환 버튼 및 ? 조작법 버튼 공통 스타일 */
-  .theme-toggle-btn,
-  .kb-help-btn {
+  /* ? 조작법 버튼 및 테마 전환 버튼 공통 스타일 */
+  .kb-help-btn,
+  .theme-toggle-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -142,8 +171,8 @@
     padding: 0 0.65rem;
   }
 
-  .theme-toggle-btn:hover,
-  .kb-help-btn:hover {
+  .kb-help-btn:hover,
+  .theme-toggle-btn:hover {
     color: #018472;
     border-color: #018472;
     background-color: rgba(1, 132, 114, 0.15);
@@ -165,8 +194,8 @@
 
   /* 라이트 모드에서 버튼 및 모달 색상 반전 */
   html.light-theme .esc-back-btn,
-  html.light-theme .theme-toggle-btn,
-  html.light-theme .kb-help-btn {
+  html.light-theme .kb-help-btn,
+  html.light-theme .theme-toggle-btn {
     color: #22252a;
     background-color: rgba(255, 255, 255, 0.92);
     border-color: rgba(0, 0, 0, 0.18);
@@ -282,7 +311,7 @@
 </style>
 
 <script>
-  // 페이지 로드 즉시 저장된 테마를 적용해 화면 깜빡임 방지
+  // 모든 페이지 로드 즉시 저장된 테마를 적용해 깜빡임 방지
   if (localStorage.getItem("hermit_theme") === "light") {
     document.documentElement.classList.add("light-theme");
   }
@@ -292,8 +321,16 @@
 <a href="{{ .Site.BaseURL }}" id="esc-back-btn" class="esc-back-btn" title="뒤로 가기 (ESC)">&lt;- esc</a>
 {{ end }}
 
-{{ if .IsHome }}
-<div class="home-bottom-right-controls">
+<div class="bottom-right-controls">
+  {{ if .IsHome }}
+  <!-- 왼쪽: ? 조작법 버튼 (메인 화면에서만 표시) -->
+  <div id="kb-help-btn" class="kb-help-btn" title="조작법 안내">
+    <span>?</span>
+    <span>조작법</span>
+  </div>
+  {{ end }}
+
+  <!-- 오른쪽: 테마 전환 아이콘 버튼 (모든 페이지에서 표시) -->
   <div id="theme-toggle-btn" class="theme-toggle-btn" title="다크 / 라이트 테마 전환">
     <!-- 다크 모드일 때 보이는 달 모양 아이콘 -->
     <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -312,13 +349,9 @@
       <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
     </svg>
   </div>
-
-  <div id="kb-help-btn" class="kb-help-btn" title="조작법 안내">
-    <span>?</span>
-    <span>조작법</span>
-  </div>
 </div>
 
+{{ if .IsHome }}
 <div id="kb-help-modal" class="kb-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="kb-modal-title">
   <div class="kb-modal-box">
     <div class="kb-modal-header">
@@ -356,7 +389,7 @@
     const helpModal = document.getElementById("kb-help-modal");
     const helpClose = document.getElementById("kb-modal-close");
 
-    // 테마 전환 버튼 클릭 이벤트 (클릭으로만 다크/라이트 전환)
+    // 테마 전환 버튼 클릭 이벤트 (모든 페이지에서 작동)
     if (themeBtn) {
       themeBtn.addEventListener("click", () => {
         const isLight = document.documentElement.classList.toggle("light-theme");
