@@ -1,4 +1,25 @@
 <style>
+
+  /* 짧은 페이지(About, Game 등)에서 푸터가 화면 중간에 뜨지 않고 화면  하단에 위치하도록 설정 (Sticky Footer) */
+  html,
+  body#page {
+    min-height: 100vh;
+  }
+
+  body#page {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+
+  .site-main {
+    flex: 1 0 auto;
+  }
+
+  #site-footer {
+    margin-top: auto !important;
+  }
+
   /* ==========================================
      라이트 테마 (html.light-theme) 전 페이지 스타일
      ========================================== */
