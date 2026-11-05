@@ -143,9 +143,16 @@
   .post-item.kb-selected > a,
   .post-item:has(> a.kb-selected) > a {
     color: #018472 !important;
+    font-weight: bold;
     background: none !important;
     padding-left: 0 !important;
     padding-right: 0 !important;
+  }
+
+  .post-item.kb-selected .post-title::before,
+  .post-item:has(> a.kb-selected) .post-title::before {
+    content: "▶ ";
+    font-size: 0.85em;
   }
 
   html.light-theme .post-item.kb-selected,
