@@ -540,8 +540,14 @@
       });
     };
 
+    const isTouchDevice = () =>
+      window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
     if (items.length > 0) {
-      updateSelection(currentIndex, false, true);
+      // 데스크톱(마우스/키보드) 환경에서만 첫 번째 항목 기본 선택
+      if (!isTouchDevice()) {
+        updateSelection(currentIndex, false, true);
+      }
 
       window.addEventListener("mousemove", () => {
         usingKeyboard = false;
@@ -550,13 +556,13 @@
       items.forEach((el, idx) => {
         const trigger = el.closest(".post-item, .pinned-post-item") || el;
         trigger.addEventListener("mouseenter", () => {
-          if (usingKeyboard) return;
+          if (usingKeyboard || isTouchDevice()) return;
           currentIndex = idx;
           updateSelection(currentIndex, false, false);
         });
       });
 
-      // 게시글 카드 영역 클릭 시 이동
+      // 게시글 카드 영역 클릭 시 상세 페이지 이동 (태그 등 내부 다른 링크 클릭 시는 제외)
       document.querySelectorAll(".post-item").forEach((item) => {
         item.addEventListener("click", (e) => {
           if (e.target.closest("a")) return;
@@ -578,7 +584,7 @@
         siteHeader.classList.add("slideInUp");
       }
 
-      if (items.length === 0) return;
+      if (items.length === 0 || (isTouchDevice() && !usingKeyboard)) return;
 
       const idx = items.indexOf(target);
       if (idx !== -1) {
