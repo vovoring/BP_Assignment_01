@@ -62,6 +62,10 @@
       {
         "name": "email",
         "url": "mailto:202312775@jbnu.ac.kr"
+      },
+      {
+        "name": "school",
+        "url": "https://www.jbnu.ac.kr/"
       }
     ]
   },
