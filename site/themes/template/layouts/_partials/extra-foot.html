@@ -117,16 +117,19 @@
     padding: 2px 0 6px 0 !important;
   }
 
-  /* 브라우저 기본 흰색 포커스 링(화이트링) 전역 제거 */
-  a,
-  a:focus,
-  a:focus-visible,
-  button,
-  button:focus,
-  button:focus-visible {
+  /* 마우스 클릭 시 생기는 포커스 테두리는 제거 */
+  a:focus:not(:focus-visible),
+  button:focus:not(:focus-visible) {
     outline: none !important;
     box-shadow: none !important;
-    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 키보드 Tab 이동 시 초점 명확히 표시 (P43 충족) */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid #018472 !important;
+    outline-offset: 3px !important;
+    border-radius: 4px;
   }
 
   /* 키보드 방향키로 선택 시 제목뿐 아니라 설명 및 태그까지 전체 박스로 감싸는 스타일 */
@@ -409,14 +412,14 @@
 <div class="bottom-right-controls">
   {{ if .IsHome }}
   <!-- 왼쪽: ? 조작법 버튼 (메인 화면에서만 표시) -->
-  <div id="kb-help-btn" class="kb-help-btn" title="조작법 안내">
+  <button type="button" id="kb-help-btn" class="kb-help-btn" title="조작법 안내" aria-label="조작법 안내">
     <span>?</span>
     <span>조작법</span>
-  </div>
+  </button>
   {{ end }}
 
   <!-- 오른쪽: 테마 전환 아이콘 버튼 (모든 페이지에서 표시) -->
-  <div id="theme-toggle-btn" class="theme-toggle-btn" title="다크 / 라이트 테마 전환">
+  <button type="button" id="theme-toggle-btn" class="theme-toggle-btn" title="다크 / 라이트 테마 전환" aria-label="다크 / 라이트 테마 전환">
     <!-- 다크 모드일 때 보이는 달 모양 아이콘 -->
     <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -433,8 +436,7 @@
       <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
       <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
     </svg>
-  </div>
-</div>
+  </button>
 
 {{ if .IsHome }}
 <div id="kb-help-modal" class="kb-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="kb-modal-title">
