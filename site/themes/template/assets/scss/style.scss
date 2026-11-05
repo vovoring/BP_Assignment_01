@@ -873,6 +873,30 @@ a.footnote-ref {
   line-height: normal;
   @include dimmed;
 
+  .post-meta-desc {
+    margin-bottom: 0.65em;
+    font-size: 1.05em;
+    line-height: 1.5;
+    color: inherit;
+  }
+
+  .post-meta-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 0.4em;
+    line-height: 1.6;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .post-meta-separator {
+    opacity: 0.5;
+    user-select: none;
+  }
+
   p {
     margin: $post-description-p-margin;
   }
@@ -883,6 +907,7 @@ a.footnote-ref {
 
   svg {
     margin-right: $post-description-svg-margin-right;
+    flex-shrink: 0;
   }
 
   .tag, 
@@ -962,13 +987,6 @@ a.footnote-ref {
     font-size: $post-nav-label-font-size;
     opacity: $post-nav-label-opacity;
     text-transform: uppercase;
-  }
-
-  .post-nav-label svg {
-    width: 1.8rem;
-    height: 1.8rem;
-    stroke-width: 2.5;
-    vertical-align: middle;
   }
 }
 
@@ -1259,3 +1277,11 @@ a.footnote-ref {
 // ==========================================
 // Import user-specific custom styles if they exist - these will override all built-in styles
 {{ with resources.Get "scss/_userstyles.scss" }}@import "userstyles";{{ end }}
+
+// 이전/다음 글 네비게이션 화살표 크기 확대
+.post-nav-label svg {
+  width: 1.8rem;
+  height: 1.8rem;
+  stroke-width: 2.5;
+  vertical-align: middle;
+}
