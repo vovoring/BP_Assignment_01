@@ -1,9 +1,9 @@
 ---
 title: 수행과정과 선택이유
-date: 2023-09-30
+date: 2026-09-30
 draft: false
 description: "대표 활동에서 제가 만든 코드에 대한 설명입니다."
-tag:
+tags:
  - "Game develop"
  - "AI"
 categories:
