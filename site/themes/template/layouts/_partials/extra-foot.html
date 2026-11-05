@@ -170,12 +170,24 @@
     outline: 1px solid rgba(1, 132, 114, 0.5) !important;
   }
 
-  /* 스크롤 여백 */
+  /* 스크롤 및 앵커 도착 지점 가림 방지 여백 (P38) */
   .post-item,
   .post-item > a,
-  .pinned-post-item > a {
+  .pinned-post-item > a,
+  .post-year,
+  h1[id],
+  h2[id],
+  h3[id],
+  h4[id],
+  h5[id],
+  h6[id] {
     scroll-margin-top: 80px;
-    scroll-margin-bottom: 90px;
+    scroll-margin-bottom: 100px;
+  }
+
+  /* 모바일 메뉴가 우측 하단 고정 버튼에 가려지지 않도록 설정 (P38) */
+  #mobile-menu {
+    z-index: 1002 !important;
   }
 
   /* 메인 화면 메뉴에 화살표(▶) 표시 추가 */
@@ -204,11 +216,15 @@
     transition: all 0.15s ease;
   }
 
-  /* 본문과 겹치기 시작하는 가로폭(960px 이하)에서는 오른쪽 위로 이동 */
+  /* 960px 이하(태블릿 768px·모바일 390px 포함)에서 상단 고정 버튼과 본문 겹침 방지 (P33, P38) */
   @media (max-width: 960px) {
     .esc-back-btn {
       left: auto;
       right: 1.5rem;
+    }
+    .site-main {
+      padding-top: 3.5rem;
+      padding-bottom: 4.5rem;
     }
   }
 
