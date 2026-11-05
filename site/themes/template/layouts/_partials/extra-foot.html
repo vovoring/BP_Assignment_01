@@ -194,6 +194,14 @@
     transition: all 0.15s ease;
   }
 
+  /* 본문과 겹치기 시작하는 가로폭(960px 이하)에서는 오른쪽 위로 이동 */
+  @media (max-width: 960px) {
+    .esc-back-btn {
+      left: auto;
+      right: 1.5rem;
+    }
+  }
+
   .esc-back-btn:hover,
   .esc-back-btn:focus {
     color: #018472 !important;
