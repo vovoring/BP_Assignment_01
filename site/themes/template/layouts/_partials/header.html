@@ -17,7 +17,7 @@
 			<span class="hdr-links hide-in-mobile">{{- partialCached "social-icons.html" . -}}</span>
 			{{- end -}}
 			{{- if and (not (eq .Site.Params.shareSocial nil)) (.Site.Params.shareSocial) (templates.Exists "_partials/social-share.html") -}}{{- partial "social-share.html" . -}}{{- end -}}
-			<button id="menu-btn" class="hdr-btn" title="{{- if fileExists " i18n" -}} {{ i18n "menu" }} {{- else -}} Menu {{- end -}}">{{- partial "svg.html" (dict "context" . "name" "menuBtn") -}}</button>
+			<button id="menu-btn" class="hdr-btn" aria-label="Menu" title="{{- if fileExists " i18n" -}} {{ i18n "menu" }} {{- else -}} Menu {{- end -}}">{{- partial "svg.html" (dict "context" . "name" "menuBtn") -}}</button>
 		</div>
 	</div>
 </header>
