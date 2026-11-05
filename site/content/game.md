@@ -49,9 +49,65 @@ draft: false
 .dino-controls-hint b {
   color: #018472;
 }
+.dino-mobile-controls {
+  display: none;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.dino-touch-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+  font-family: monospace;
+  color: #eeeeee;
+  background: rgba(59, 62, 72, 0.95);
+  border: 2px solid rgba(1, 132, 114, 0.6);
+  border-radius: 10px;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.08s ease, background-color 0.08s ease;
+}
+.dino-touch-btn:active,
+.dino-touch-btn.active {
+  background: rgba(1, 132, 114, 0.28);
+  border-color: #018472;
+  color: #018472;
+  transform: scale(0.97);
+}
+html.light-theme .dino-touch-btn {
+  background: #ffffff;
+  color: #22252a;
+  border-color: rgba(1, 132, 114, 0.6);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+html.light-theme .dino-touch-btn:active,
+html.light-theme .dino-touch-btn.active {
+  background: rgba(1, 132, 114, 0.18);
+  color: #018472;
+}
+@media (hover: none), (pointer: coarse), (max-width: 760px) {
+  .dino-controls-hint {
+    display: none;
+  }
+  .dino-mobile-controls {
+    display: flex;
+  }
+}
 </style>
 
-<div class="dino-wrapper"><div class="dino-canvas-box"><canvas id="dino-canvas" width="720" height="220"></canvas></div><div class="dino-controls-hint"><span><b>Space / ↑ / 클릭</b> 점프</span><span><b>↓</b> 숙이기 · 빠른 착지</span><span><b>ESC</b> 메인으로 나가기</span></div></div>
+<div class="dino-wrapper"><div class="dino-canvas-box"><canvas id="dino-canvas" width="720" height="220"></canvas></div><div class="dino-controls-hint"><span><b>Space / ↑ / 클릭</b> 점프</span><span><b>↓</b> 숙이기 · 빠른 착지</span><span><b>ESC</b> 메인으로 나가기</span></div><div class="dino-mobile-controls"><button type="button" id="dino-jump-btn" class="dino-touch-btn">▲ Jump</button><button type="button" id="dino-down-btn" class="dino-touch-btn">▼ Down</button></div></div>
 
 <script>
 (() => {
@@ -369,14 +425,18 @@ draft: false
     requestAnimationFrame(loop);
   }
 
+  const handleJumpInput = (e) => {
+    if (e) e.preventDefault();
+    if (gameState === "PLAYING") {
+      dino.jump();
+    } else {
+      startOrRestart();
+    }
+  };
+
   window.addEventListener("keydown", (e) => {
     if (["Space", "ArrowUp"].includes(e.code)) {
-      e.preventDefault();
-      if (gameState === "PLAYING") {
-        dino.jump();
-      } else {
-        startOrRestart();
-      }
+      handleJumpInput(e);
     } else if (e.code === "ArrowDown") {
       if (gameState === "PLAYING") {
         e.preventDefault();
@@ -391,14 +451,40 @@ draft: false
     }
   });
 
-  canvas.addEventListener("pointerdown", (e) => {
-    e.preventDefault();
-    if (gameState === "PLAYING") {
-      dino.jump();
-    } else {
-      startOrRestart();
-    }
-  });
+  canvas.addEventListener("pointerdown", handleJumpInput);
+
+  const jumpBtn = document.getElementById("dino-jump-btn");
+  const downBtn = document.getElementById("dino-down-btn");
+
+  if (jumpBtn) {
+    jumpBtn.addEventListener("pointerdown", (e) => {
+      jumpBtn.classList.add("active");
+      handleJumpInput(e);
+    });
+    const clearJumpActive = () => jumpBtn.classList.remove("active");
+    jumpBtn.addEventListener("pointerup", clearJumpActive);
+    jumpBtn.addEventListener("pointercancel", clearJumpActive);
+    jumpBtn.addEventListener("pointerleave", clearJumpActive);
+  }
+
+  if (downBtn) {
+    const startDuck = (e) => {
+      e.preventDefault();
+      downBtn.classList.add("active");
+      if (gameState === "PLAYING") {
+        dino.setDuck(true);
+      }
+    };
+    const endDuck = (e) => {
+      if (e) e.preventDefault();
+      downBtn.classList.remove("active");
+      dino.setDuck(false);
+    };
+    downBtn.addEventListener("pointerdown", startDuck);
+    downBtn.addEventListener("pointerup", endDuck);
+    downBtn.addEventListener("pointercancel", endDuck);
+    downBtn.addEventListener("pointerleave", endDuck);
+  }
 
   requestAnimationFrame(loop);
 })();
