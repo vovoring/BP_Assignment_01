@@ -1,116 +1,192 @@
-# LEO's Homepage — 개인 소개 및 포트폴리오 웹사이트
+# LEO's Homepage — 개인 소개·포트폴리오 웹사이트
 
-전북대학교 컴퓨터인공지능학부 재학생 **LEO**의 개인 소개 및 게임 개발 활동을 정리한 포트폴리오 웹사이트 저장소입니다.  
-Hugo의 **Hermit-V2** 테마를 기반으로 구축되었으며, GitHub Actions를 통해 GitHub Pages로 자동 배포됩니다.
+전북대학교 컴퓨터인공지능학부 **LEO**의 자기소개와 게임 개발 활동(Unity 프로젝트 *Lost Paradise* 괴물 AI 개발)을 정리한 웹사이트입니다.
+Hugo 테마 **Hermit-V2**로 만들었고, `main` 브랜치에 push하면 GitHub Actions가 GitHub Pages에 자동으로 배포합니다.
 
-- **공개 사이트 주소**: [https://vovoring.github.io/BP\_Assignment\_01/](https://www.google.com/search?q=https://vovoring.github.io/BP_Assignment_01/)
-- **GitHub 저장소 주소**: [https://github.com/vovoring/BP\_Assignment\_01](https://www.google.com/search?q=https://github.com/vovoring/BP_Assignment_01)
-- **GitHub Actions 배포 현황**: [https://github.com/vovoring/BP\_Assignment\_01/actions](https://www.google.com/search?q=https://github.com/vovoring/BP_Assignment_01/actions)
+| 항목 | 주소 |
+| --- | --- |
+| 공개 사이트 | https://vovoring.github.io/BP_Assignment_01/ |
+| 저장소 | https://github.com/vovoring/BP_Assignment_01 |
+| 배포 기록(Actions) | https://github.com/vovoring/BP_Assignment_01/actions |
 
-## 1. 사이트 주요 구성 및 핵심 기능
+---
 
-| 메뉴 / 기능 | 경로 / 위치 | 주요 내용 및 동작 설명 |
-| :--- | :--- | :--- |
-| **홈 화면** | `/` (`site/content/_index.md`) | 사이트 제목(`LEO's homepage`), 타이프라이터 부제, 소셜 아이콘(GitHub·이메일·전북대 홈페이지) 및 주요 메뉴 연결 |
-| **Posts** | `/posts/` (`site/content/posts/*.md`) | 관심 분야, 학습 목표, 역량, 대표 활동(`Lost Paradise` 괴물 AI 개발) 과정과 결과를 정리한 9개 게시글 목록 |
-| **About** | `/about/` (`site/content/about.md`) | 자기소개 및 게임 개발 동아리(GPU) 입부 당시 제작한 언리얼 엔진 점프맵 포트폴리오 이미지·시연 영상 링크 |
-| **Game** | `/game/` (`site/content/game.md`) | 키보드(`Space`, `↑`, `↓`) 및 모바일 터치 버튼(`▲ Jump`, `▼ Down`)으로 플레이 가능한 캔버스 기반 공룡 점프 미니게임 |
-| **전역 편의·접근성 UI** | 전 페이지 공통 (`extra-foot.html`) | 다크/라이트 테마 전환 버튼, `? 조작법` 단축키 안내 모달, `<- esc` 상위 페이지 복귀 버튼, 방향키(`↑`/`↓`/`←`/`→`) 메뉴·글 탐색 |
+## 1. 저장소 구조
 
-## 2. 실행 환경 및 로컬 빌드·실행 방법 (P56)
+```text
+BP_Assignment_01/
+├─ .github/
+│  ├─ workflows/hugo-pages.yml   # 배포 워크플로 (main push 시 자동 실행)
+│  └─ pages_build.py             # 의존성 설치·빌드·주소 보정 스크립트 (수업 제공)
+├─ .github-pages.json            # 빌드 설정(Hugo 버전, 설정 파일명, 테마명, baseURL)
+├─ prepare_github_pages.py       # 최초 배포 준비 스크립트 (수업 제공, pages_build.py와 동일 파일)
+├─ LICENSE                       # Hermit-V2 MIT 라이선스 원문
+└─ site/                         # ← 실제 Hugo 사이트 (수정은 모두 여기서)
+   ├─ pages.json                 # Hugo 설정 파일 (hugo.toml 역할)
+   ├─ content/                   # 페이지 본문(Markdown)
+   ├─ static/images/             # 이미지·영상
+   └─ themes/template/           # Hermit-V2 테마 (일부 수정)
+```
 
-이 저장소는 수업 제공 준비 스크립트(`prepare_github_pages.py`)를 통해 실제 Hugo 사이트 파일들이 최상위 루트가 아닌 **`site/` 폴더 내부**에 구성되어 있습니다. 로컬 PC에서 사이트를 동일하게 빌드하거나 실행하려면 아래 도구 버전과 명령어를 사용합니다.
+> Hugo 사이트 파일은 루트가 아니라 **`site/` 폴더**에 있습니다. 설정 파일도 `hugo.toml`이 아니라 **`site/pages.json`** 입니다.
 
-### 필요한 도구 및 권장 버전
+---
 
-| 도구명 | 버전 | 용도 및 비고 |
-| :--- | :--- | :--- |
-| **Python** | `3.12` (최소 `3.9` 이상) | 배포 준비 및 경로 보정 스크립트(`.github/pages_build.py`) 실행 |
-| **Hugo Extended** | `0.167.0` (`v0.146.0` 이상) | SCSS 컴파일을 위해 일반 버전이 아닌 **Extended** 버전 필수 |
-| **Dart Sass** | `1.105.0` | 테마의 SCSS 스타일시트 빌드 |
-| **Git** | 최신 버전 | 저장소 클론 및 버전 관리 |
+## 2. 실행 환경과 빌드·실행 방법
 
-### 설치 및 재현 명령어
+### 2-1. 필요한 도구와 버전
 
-저장소 최상위 폴더(`BP_Assignment_01`)에서 터미널을 열고 아래 순서대로 실행합니다.
+배포 워크플로(`.github/workflows/hugo-pages.yml`)에 적힌 버전과 같습니다.
 
-**1단계: 저장소 복제 및 폴더 이동**
+| 도구 | 버전 | 용도 |
+| --- | --- | --- |
+| Git | 최신 | 저장소 복제, commit·push |
+| Python | 3.12 (Actions 기준, 3.13에서도 빌드 확인) | `.github/pages_build.py` 실행 |
+| Node.js / npm | 24 (Actions 기준, 20에서도 빌드 확인) | `--dependencies` 단계에서 postcss·tailwindcss·pagefind를 `.pages-tools/`에 설치 |
+| **Hugo Extended** | **0.167.0** | 사이트 생성 (일반판이 아닌 **Extended**판 필요) |
+| Dart Sass | 1.105.0 | 테마 SCSS 컴파일 |
+
+### 2-2. 설치
+
+**Hugo Extended 0.167.0**: https://github.com/gohugoio/hugo/releases/tag/v0.167.0 에서 OS에 맞는 `hugo_extended_0.167.0_*` 파일을 받아 압축을 풀고 PATH에 추가합니다.
+**Dart Sass 1.105.0**: https://github.com/sass/dart-sass/releases/tag/1.105.0 에서 받은 뒤 압축을 풀고 `dart-sass` 폴더를 PATH에 추가합니다.
+
+Linux 예시 (Actions와 같은 방식):
+
+```bash
+mkdir -p ~/tools && cd ~/tools
+curl -fL https://github.com/gohugoio/hugo/releases/download/v0.167.0/hugo_extended_0.167.0_linux-amd64.tar.gz | tar -xz
+curl -fL https://github.com/sass/dart-sass/releases/download/1.105.0/dart-sass-1.105.0-linux-x64.tar.gz | tar -xz
+export PATH="$HOME/tools:$HOME/tools/dart-sass:$PATH"
+```
+
+설치 확인:
+
+```bash
+hugo version      # hugo v0.167.0-...+extended 가 나와야 함
+sass --version    # 1.105.0
+python --version
+node --version
+```
+
+### 2-3. 복제와 빌드 (배포와 같은 결과물 만들기)
+
+명령은 반드시 **저장소 최상위 폴더**에서 실행합니다. 스크립트가 현재 폴더 기준으로 `.github-pages.json`과 `site/`를 찾습니다.
 
 ```bash
 git clone https://github.com/vovoring/BP_Assignment_01.git
 cd BP_Assignment_01
+
+python .github/pages_build.py --dependencies   # 빌드 보조 도구 설치
+python .github/pages_build.py --build          # public/ 폴더에 사이트 생성
 ```
 
-**2단계: GitHub Pages 배포와 동일한 정적 빌드 실행 (`public/` 폴더 생성)**
+성공하면 마지막 줄에 `빌드 완료. 프로젝트 주소 경로 보정: N 개 파일`이 출력되고 `public/index.html`이 생깁니다.
+favicon 누락이나 `languageCode deprecated` 같은 `WARN` 메시지가 나와도 빌드 결과에는 영향이 없습니다.
+`public/`과 `.pages-tools/`는 `.gitignore`에 포함되어 있으므로 커밋하지 않습니다.
+
+### 2-4. 브라우저에서 확인
+
+**방법 A: 빠른 미리보기 (글 수정 시 자동 새로고침)**
 
 ```bash
-python .github/pages_build.py --dependencies
-python .github/pages_build.py --build
+hugo server --source site --config pages.json
 ```
 
-위 명령을 실행하면 `site/pages.json` 설정을 읽어 `public/` 폴더에 최종 배포용 HTML·CSS·JS 파일이 생성되고 하위 경로(`/BP_Assignment_01/`)가 자동 보정됩니다.
+http://localhost:1313/BP_Assignment_01/ 에 접속합니다.
+※ About의 포트폴리오 이미지와 「산출물과 결과 설명」 글의 영상은 `../static/...` 상대경로로 연결되어 있습니다. 이 경로는 `--build` 단계에서만 보정되기 때문에 방법 A에서는 깨져 보일 수 있습니다.
 
-**3단계: 로컬 개발 서버로 화면 바로 확인하기**
+**방법 B: 실제 배포본과 같은 화면 확인**
 
 ```bash
-hugo server --source site --config pages.json --themesDir themes --theme template -D
+# macOS / Linux
+SITE_BASE_URL=http://localhost:8000/ python .github/pages_build.py --build
+cd public && python -m http.server 8000
 ```
 
-명령 실행 후 웹 브라우저에서 `http://localhost:1313/BP_Assignment_01/` 주소로 접속하면 로컬에서 사이트를 바로 확인할 수 있습니다.
-
-## 3. 파일 수정 위치 및 재배포·확인 방법 (P57)
-
-사이트의 설정이나 본문 글, 추가 기능을 수정할 때는 반드시 **`site/` 폴더 아래의 파일**을 수정해야 배포 화면에 반영됩니다.
-
-### 수정할 파일 위치 안내
-
-| 수정 대상 | 파일 상대 경로 | 역할 및 주요 수정 내용 |
-| :--- | :--- | :--- |
-| **사이트 기본 설정·메뉴** | `site/pages.json` | 사이트 제목, `baseURL`, 한국어(`ko`/`ko-kr`), 상단 메뉴(`Posts`, `About`, `Game`), 소셜 링크 설정 |
-| **홈·자기소개 본문** | `site/content/_index.md`<br>`site/content/about.md` | 홈 기본 문구, 학과·학년 소개, 동아리 입부 포트폴리오 사진 및 유튜브 영상 링크 |
-| **개인 소개·활동 게시글** | `site/content/posts/*.md` | 관심 분야·학습 목표·역량·대표 활동(`Lost Paradise`) 관련 마크다운 게시글 9개 |
-| **본문 첨부 이미지** | `site/static/images/portfolio.png` | `About` 페이지에 표시되는 점프맵 포트폴리오 캡처 이미지 |
-| **공룡 점프 미니게임** | `site/content/game.md` | 캔버스(`#dino-canvas`) 기반 미니게임 스타일, 모바일 터치 버튼, 60FPS 고정 게임 루프 스크립트 |
-| **전역 UI·테마·키보드 탐색** | `site/themes/template/layouts/_partials/extra-foot.html` | 다크/라이트 모드 전환, `? 조작법` 모달, `<- esc` 상위 복귀 버튼, `↑`/`↓`/`Enter`/`ESC` 탐색, 포커스·반응형 여백(P33·P38·P43), Sticky Footer |
-| **게시글 좌우 방향키 이동** | `site/assets/js/main.js`<br>`site/themes/template/assets/js/main.js` | 게시글 상세 화면에서 좌우 방향키(`←`/`→`)로 이전·다음 게시글로 이동하는 이벤트 리스너 |
-| **게시글 메타·화살표 스타일** | `site/assets/scss/style.scss`<br>`site/themes/template/assets/scss/style.scss` | 게시글 메타 정보(`.post-meta-desc`, `.post-meta-item`) 여백 정돈 및 이전·다음 화살표(`.post-nav-label svg`) 크기 확대 |
-| **게시글 상세 레이아웃·정보** | `site/themes/template/layouts/posts/single.html`<br>`site/themes/template/layouts/_partials/posts_single_info.html` | 이전·다음 글 버튼에 화살표 아이콘 적용 및 상단 메타 영역(설명·태그·카테고리·단어 수·날짜) 구조 개편 |
-| **커스텀 SVG 아이콘** | `site/themes/template/layouts/_partials/svg.html` | 전북대학교 홈페이지 링크용 학사모(`school`) SVG 아이콘 추가 |
-
-### 수정 후 자동 재배포 및 확인 절차
-
-1. 위 경로의 파일을 수정하고 저장한 뒤, 로컬에서 `python .github/pages_build.py --build`를 실행해 빌드 오류가 없는지 먼저 점검합니다.
-2. 아래 명령어로 변경 사항을 `main` 브랜치에 커밋하고 원격 저장소에 푸시(`push`)합니다.
-
-```bash
-git add .
-git commit -m "수정 내용 요약 메시지"
-git push origin main
+```powershell
+# Windows PowerShell
+$env:SITE_BASE_URL="http://localhost:8000/"; python .github/pages_build.py --build
+cd public; python -m http.server 8000
 ```
 
-3. `main` 브랜치에 `push`가 완료되면 `.github/workflows/hugo-pages.yml` 워크플로가 자동으로 실행됩니다.
-4. GitHub 저장소의 **[Actions 탭](https://www.google.com/search?q=https://github.com/vovoring/BP_Assignment_01/actions)** 에서 가장 최근 실행된 `Deploy Hugo to GitHub Pages` 워크플로의 `build`와 `deploy` 작업이 모두 초록색 체크(성공)로 끝났는지 확인합니다.
-5. 배포 완료 후 로그인하지 않은 브라우저(시크릿 창 등)에서 **[공개 사이트 주소](https://www.google.com/search?q=https://vovoring.github.io/BP_Assignment_01/)** 를 새로고침하여 수정한 내용이 정상 반영되었는지 확인합니다.
+http://localhost:8000/ 에 접속합니다. 확인이 끝나면 `Ctrl+C`로 서버를 종료합니다.
 
-## 4. 사용 자료 출처·라이선스 및 직접 제작·AI 생성 구분 (P58)
+---
 
-이 프로젝트에 사용된 오픈소스 테마, 수업 제공 스크립트, 본인 직접 제작 콘텐츠, AI 생성·보조 코드의 파일별 구분과 출처·이용 조건은 다음과 같습니다.
+## 3. 수정 위치와 재배포 방법
 
-| 구분 | 사용 위치 (파일 상대 경로) | 상세 내용 및 출처 / 사용 도구 | 라이선스 및 이용 조건 |
-| :--- | :--- | :--- | :--- |
-| **원본 테마 (외부)** | `site/themes/template/`<br>`site/assets/` | Hugo 테마 **Hermit-V2** ([1bl4z3r/hermit-V2](https://github.com/1bl4z3r/hermit-V2), 원작자 [Track3/hermit](https://github.com/Track3/hermit) 포크) | **MIT License** (`LICENSE` 및 `site/themes/template/LICENSE` 보존, 하단 푸터 `Made with Hugo & Hermit-V2` 출처 고지 유지) |
-| **테마 내장 오픈소스 (외부)** | `site/assets/scss/_normalize.scss`<br>`site/assets/scss/_animate.scss`<br>`site/themes/template/layouts/_partials/svg.html`<br>`site/assets/js/code-copy.js` | [normalize.css](https://necolas.github.io/normalize.css/), [animate.css](https://daneden.github.io/animate.css/), [Feather Icons](https://feathericons.com/), [Tom Spencer code-copy.js](https://www.fiznool.com/blog/2018/09/14/adding-click-to-copy-buttons-to-a-hugo-powered-blog/) | **MIT License** (원본 테마에 포함된 오픈소스 라이선스 및 출처 유지) |
-| **배포 준비 도구 (외부)** | `prepare_github_pages.py`<br>`.github/pages_build.py`<br>`.github/workflows/hugo-pages.yml` | 2026학년도 초급프로젝트 수업 제공 GitHub Pages 자동 배포 준비 스크립트 (`v3.1`) | 수업 과제 수행용 제공 스크립트 |
-| **직접 제작 (본인)** | `site/content/about.md`<br>`site/content/posts/*.md` (총 9개 파일) | 본인 소개글, 관심 분야, 학습 목표, 역량, 대표 활동(`Lost Paradise` 괴물 AI 개발) 본문 텍스트 전체 직접 작성 | 본인 직접 작성 |
-| **직접 제작 (본인)** | `site/static/images/portfolio.png`<br>[유튜브 시연 영상](https://youtu.be/SlFyMldFBJs) | 게임 개발 동아리(GPU) 입부 포트폴리오로 직접 제작한 언리얼 엔진 점프맵 플레이 영상 및 캡처 이미지 | 본인 직접 제작 및 촬영 |
-| **AI 생성·보조 (AI)** | `site/themes/template/layouts/_partials/extra-foot.html` | 전 페이지 공통 추가 기능 구현: 다크/라이트 테마 전환 버튼 및 스타일(`html.light-theme`), 메인 화면 `? 조작법` 단축키 모달, 하위 페이지 `<- esc` 상위 복귀 버튼, 키보드(`↑`/`↓`/`Enter`/`ESC`) 메뉴·게시글 탐색, `:focus-visible` 초점 표시(P43), 반응형·스크롤 가림 방지 여백(P33·P38), 하단 Sticky Footer | AI 코드 생성·보조 후 본인 동작 검증·적용 |
-| **AI 생성·보조 (AI)** | `site/content/game.md` | HTML5 `<canvas>` 기반 공룡 점프 미니게임 구현, 모바일/터치 전용 조작 버튼(`▲ Jump`, `▼ Down`), 고주사율 모니터 대응 60FPS 프레임 고정(`dt` 보정), 최고 점수 `localStorage` 저장 | AI 코드 생성·보조 후 본인 동작 검증·적용 |
-| **AI 생성·보조 (AI)** | `site/assets/js/main.js`<br>`site/themes/template/assets/js/main.js` | 게시글 상세 페이지에서 키보드 좌우 방향키(`←`/`→`) 입력 시 이전·다음 게시글로 이동하는 단축키 기능 추가 | 원본 테마(MIT) 위 AI 보조 및 본인 검증 |
-| **AI 생성·보조 (AI)** | `site/assets/scss/style.scss`<br>`site/themes/template/assets/scss/style.scss` | 게시글 상단 메타 정보(`.post-meta-desc`, `.post-meta-item`, `.post-meta-separator`) 레이아웃 스타일 추가 및 하단 이전·다음 글 화살표(`.post-nav-label svg`) 크기 확대 | 원본 테마(MIT) 위 AI 보조 및 본인 검증 |
-| **AI 생성·보조 (AI)** | `site/themes/template/layouts/_partials/posts_single_info.html`<br>`site/themes/template/layouts/posts/single.html` | 게시글 상단 메타 영역(설명·작성자 숨김 처리·태그·카테고리·단어 수·날짜) 구조 정리 및 하단 이전·다음 글 네비게이션 화살표 아이콘 적용 | 원본 테마(MIT) 위 AI 보조 및 본인 검증 |
-| **AI 생성·보조 (AI)** | `site/themes/template/layouts/_partials/svg.html`<br>`site/pages.json` | 전북대학교 홈페이지 링크용 학사모(`school`) SVG 아이콘 추가 및 `site/pages.json` 사이트 설정·메뉴·소셜 링크 구성 보조 | 원본 테마(MIT) 위 AI 보조 및 본인 설정·검증 |
+### 3-1. 수정할 파일 위치
 
-## 5. 라이선스 고지 (License)
+| 바꾸고 싶은 것 | 파일 |
+| --- | --- |
+| 사이트 제목, 부제, 상단 메뉴(Posts·About·Game), 소셜 링크, 색상 | `site/pages.json` |
+| 홈 문구 | `site/content/_index.md` |
+| 자기소개·동아리 포트폴리오 | `site/content/about.md` |
+| 게시글 9개 (관심 분야, 학습 목표, 역량, 대표 활동 등) | `site/content/posts/*.md` |
+| 공룡 점프 미니게임 (Game 메뉴) | `site/content/game.md` |
+| 이미지·영상 | `site/static/images/portfolio.png`, `site/static/images/Project.mp4` |
+| 다크/라이트 전환, `?` 조작법 안내, `<- esc` 버튼, 키보드 탐색, 포커스 표시, Sticky Footer | `site/themes/template/layouts/_partials/extra-foot.html` |
+| 게시글 좌우 방향키(←/→) 이동 | `site/themes/template/assets/js/main.js` |
+| 게시글 메타 정보·이전/다음 화살표 스타일 | `site/themes/template/assets/scss/style.scss` |
+| 게시글 상단 메타 영역 / 이전·다음 글 버튼 | `site/themes/template/layouts/_partials/posts_single_info.html`, `site/themes/template/layouts/posts/single.html` |
+| 아이콘(전북대 학사모 `school` 아이콘 포함) | `site/themes/template/layouts/_partials/svg.html` |
 
-- 이 저장소의 기반 테마인 **Hermit-V2**는 **MIT License** 하에 배포되며, 원본 저작권 고지와 허가 조건은 루트의 `LICENSE` 및 `site/themes/template/LICENSE` 파일에 그대로 보존되어 있습니다.
-- 웹사이트 공개 화면 하단 푸터에도 테마 제작자 및 도구 출처(`Made with Hugo & Hermit-V2`) 고지를 삭제하지 않고 유지합니다.
+새 글을 추가할 때는 `site/content/posts/`에 `.md` 파일을 만들고, 기존 글처럼 머리말(front matter)을 넣습니다.
+
+```markdown
+---
+title: 글 제목
+date: 2026-11-05
+draft: false        # true면 공개 사이트에 나오지 않음
+description: "목록에 표시될 설명"
+tags:
+ - "Game develop"
+categories:
+ - "Project"
+---
+본문...
+```
+
+`.github/pages_build.py`, `prepare_github_pages.py`, `.github/workflows/hugo-pages.yml`은 배포용 수업 제공 파일이므로 수정하지 않습니다.
+
+### 3-2. 커밋·push → Actions → 공개 화면 확인
+
+1. 파일을 수정한 뒤 `python .github/pages_build.py --build`로 오류가 없는지 확인합니다.
+2. `main` 브랜치에 커밋하고 push합니다.
+   ```bash
+   git add .
+   git commit -m "수정 내용 요약"
+   git push origin main
+   ```
+3. push하면 **Deploy Hugo to GitHub Pages** 워크플로가 자동으로 실행됩니다.
+4. 저장소의 **Actions** 탭(https://github.com/vovoring/BP_Assignment_01/actions)에서 최신 실행을 열고, `build`와 `deploy` 작업이 모두 초록색 체크인지 확인합니다.
+   - 빨간 X가 표시되면 해당 단계 로그를 열어 오류를 확인하고, 고친 뒤 다시 push합니다.
+   - 코드를 바꾸지 않고 다시 배포하려면 Actions → *Deploy Hugo to GitHub Pages* → **Run workflow**를 누릅니다.
+5. 로그인하지 않은 브라우저(시크릿 창)에서 https://vovoring.github.io/BP_Assignment_01/ 을 열어 강력 새로고침(`Ctrl+F5`)한 뒤 수정 내용이 반영되었는지 확인합니다.
+
+> 최초 1회 설정: Settings → Pages → Build and deployment → Source를 **GitHub Actions**로 선택해야 합니다.
+
+---
+
+## 4. 사용 자료 출처와 직접 제작·AI 생성 구분
+
+| 구분 | 위치 | 출처 / 내용 | 이용 조건 |
+| --- | --- | --- | --- |
+| 외부 · 테마 원본 | `site/themes/template/` | Hugo 테마 **Hermit-V2** — https://github.com/1bl4z3r/hermit-V2 (원작 Track3/hermit 기반) | MIT License, 원문은 루트 `LICENSE`에 보존 |
+| 외부 · 테마 포함 라이브러리 | `site/themes/template/assets/scss/_normalize.scss`, `_animate.scss`, `assets/js/code-copy.js`, `layouts/_partials/svg.html`의 아이콘 | normalize.css, animate.css, Feather Icons 등 Hermit-V2에 포함된 자료 | 각 원본 라이선스, 테마 안의 출처 표기 유지 |
+| 외부 · 생성 도구 | Hugo, Dart Sass (빌드할 때만 사용) | https://gohugo.io/ , https://sass-lang.com/dart-sass/ | 각 도구 라이선스 |
+| 수업 제공 | `prepare_github_pages.py`, `.github/pages_build.py`, `.github/workflows/hugo-pages.yml`, `.github-pages.json` | 초급프로젝트 수업 제공 GitHub Pages 배포 준비 스크립트 v3.1 | 과제 수행용, 수정하지 않음 |
+| 직접 제작 | `site/content/_index.md`, `about.md`, `posts/*.md`(9개) | 자기소개·관심 분야·학습 목표·대표 활동 글 전체를 직접 작성 | 저작권: 본인 |
+| 직접 제작 | `site/static/images/portfolio.png`, YouTube 영상 https://youtu.be/SlFyMldFBJs | 동아리(GPU) 입부용으로 직접 만든 Unreal Engine 점프맵 캡처와 플레이 영상 | 저작권: 본인 |
+| 직접 제작 | `site/static/images/Project.mp4` | 대표 활동(*Lost Paradise* 괴물 AI) 중간 결과 영상 | 저작권: 본인 |
+| 직접 설정 | `site/pages.json` | 사이트 제목·메뉴·소셜 링크·색상 설정 | — |
+| AI 생성·보조 후 본인 검증 | `site/content/game.md` | 캔버스 공룡 점프 미니게임, 모바일 터치 버튼, 60FPS 고정, 최고 점수 `localStorage` 저장 | 본인 동작 검증 후 적용 |
+| AI 생성·보조 후 본인 검증 | `site/themes/template/layouts/_partials/extra-foot.html` (새 파일) | 테마 전환, 조작법 모달, esc 버튼, 키보드 탐색, 포커스 표시, 겹침 방지 여백, Sticky Footer | 본인 동작 검증 후 적용 |
+| AI 보조로 테마 수정 | `assets/js/main.js`, `assets/scss/style.scss`, `layouts/_partials/posts_single_info.html`, `layouts/posts/single.html`, `layouts/_partials/svg.html`(`school` 아이콘), `layouts/_partials/header.html`·`social-icons.html`(`aria-label` 추가) | 방향키 이동, 메타·화살표 스타일, 아이콘, 접근성 이름 | 원본은 MIT, 수정 부분은 본인 검증 |
+
+## 5. 라이선스 고지
+
+- 기반 테마 Hermit-V2는 **MIT License**(Copyright (c) 2018-present, The Hermit-V2 Authors)로 배포됩니다. 원문은 루트 [`LICENSE`](./LICENSE)에 그대로 보존합니다.
+- 공개 사이트 하단의 `Made with Hugo & Hermit-V2` 출처 표기(`footer.html`)를 유지합니다.
+- 본인이 직접 쓴 글과 직접 만든 이미지·영상의 저작권은 본인에게 있으며, MIT 라이선스 적용 대상이 아닙니다.

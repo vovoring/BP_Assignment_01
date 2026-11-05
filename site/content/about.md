@@ -1,5 +1,5 @@
 ---
-title: "About"
+title: "포트폴리오"
 date: 2026-11-02
 draft: false
 ---
